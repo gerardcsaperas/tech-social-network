@@ -52,10 +52,12 @@ router.post(
 
             // Return jsonwebtoken (in the front end, when a user registers, we want them to login right away)
             const payload = {
-                id: user.id
+                user: {
+                    id: user.id
+                }
             };
 
-            jwt.sign(payload, config.get('jwtSecret'), { expiserIn: 3600 }, (err, token) => {
+            jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 3600 }, (err, token) => {
                 if (err) throw err;
                 res.json({ token });
             });
