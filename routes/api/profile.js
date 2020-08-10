@@ -185,4 +185,8 @@ router.put(
     }
 );
 
+// @route   DELETE api/profile/experience/
+// @desc    Delete one of the profile experiences
+// @access  Private
+
 module.exports = router;
