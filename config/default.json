@@ -1,4 +1,0 @@
-{
-    "mongoURI": "mongodb+srv://gerardcsaperas:castrelosaperas9@mysocialnetwork-y8xl6.mongodb.net/MySocialNetwork?retryWrites=true&w=majority",
-    "jwtSecret": "gerardcastrelosaperas'secrettoken"
-}
