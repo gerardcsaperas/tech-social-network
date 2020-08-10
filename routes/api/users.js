@@ -26,31 +26,43 @@ router.post(
 
         const { username, email, password } = req.body;
 
-        // See if user already exists
-        let user = await User.findOne({ email });
+        try {
+            // See if user already exists
+            let user = await User.findOne({ email });
 
-        if (user) {
-            return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+            if (user) {
+                return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+            }
+            // Get users gravatar (based on their email)
+            const avatar = gravatar.url(email, {
+                size: '200',
+                rating: 'pg',
+                default: 'monsterid'
+            });
+            // Create a new instance of User
+            user = new User({ username, email, password, avatar });
+
+            // Encrypt password (bcrypt)
+            const salt = await bcrypt.genSalt(10);
+
+            user.password = await bcrypt.hash(password, salt);
+
+            // Save new user in database
+            await user.save();
+
+            // Return jsonwebtoken (in the front end, when a user registers, we want them to login right away)
+            const payload = {
+                id: user.id
+            };
+
+            jwt.sign(payload, config.get('jwtSecret'), { expiserIn: 3600 }, (err, token) => {
+                if (err) throw err;
+                res.json({ token });
+            });
+        } catch (err) {
+            console.log(err.message);
+            res.status(500).send('Server error');
         }
-        // Get users gravatar (based on their email)
-        const avatar = gravatar.url(email, {
-            size: '200',
-            rating: 'pg',
-            default: 'monsterid'
-        });
-        // Create a new instance of User
-        user = new User({ username, email, password, avatar });
-
-        // Encrypt password (bcrypt)
-        const salt = await bcrypt.genSalt(10);
-
-        user.password = await bcrypt.hash(password, salt);
-
-        // Save new user in database
-        await user.save();
-
-        // Return jsonwebtoken (in the front end, when a user registers, we want them to login right away)
-        res.send('User registered');
     }
 );
 
